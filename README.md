@@ -1,4 +1,4 @@
-# 🏴‍☠️ Bandit.camp bot Setup Guide
+# 💰 Bandit.camp bot Setup Guide
 
 Follow the steps below to get started.
 

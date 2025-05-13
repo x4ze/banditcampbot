@@ -32,7 +32,7 @@ def create_shortcut():
     script_dir = os.path.abspath(os.path.dirname(__file__))
     main_py = os.path.join(script_dir, "main.py")
     
-    shortcut_path = os.path.join(desktop, "bandit.camp bot.lnk")
+    shortcut_path = os.path.join(desktop, "x4ze's bandit.camp bot.lnk")
     
     # Use Windows cmd to run Python script
     target = r"C:\Windows\System32\cmd.exe"
