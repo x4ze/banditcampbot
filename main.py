@@ -45,6 +45,7 @@ def version_is_newer(v1, v2):
 
 def check_for_updates():
     try:
+        global current_version
         REPO_URL = "https://raw.githubusercontent.com/x4ze/banditcampbot/main"
         VERSION_FILE = f"{REPO_URL}/version.txt"
         SCRIPT_FILE = f"{REPO_URL}/main.py"
@@ -55,10 +56,10 @@ def check_for_updates():
             print(f"A newer version ({latest_version}) is available, downloading...")
             with open(__file__, "w", encoding="utf-8") as f:
                 f.write(requests.get(SCRIPT_FILE).text)
-            with open("version.txt", "w") as f:
+            with open("version.txt", "w+") as f:
                 f.write(latest_version)
 
-            global current_version
+            
             current_version = latest_version
             print(f"Successfully updated to v{current_version}!")
             print("Restarting script...")
