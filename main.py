@@ -60,10 +60,12 @@ def check_for_updates():
 
             global current_version
             current_version = latest_version
-            print("Successfully updated to v{current_version}!")
+            print(f"Successfully updated to v{current_version}!")
             print("Restarting script...")
             os.execv(sys.executable, [sys.executable] + sys.argv)
             print("Successfully restarted script")
+        else:
+            print(f"You are using the latest version of the script (v{current_version}).")
 
     except Exception as e:
         print(f"Failed while checking for updates: {e}")
@@ -103,7 +105,7 @@ try:
         cashout_limit = data[chosen_account].get('cashout_limit')
         print(f"Cashout limit set to: {cashout_limit}")
 
-    send_discord_message(f"**[{selected_account}]** starting bandit.camp bot with a cashout limit of ${cashout_limit}, {"without" if disableAutoBet else "with"} autobet and {"with" if shouldCollectRain else "without"} rain collection")
+    send_discord_message(f"**[{selected_account}]** starting bandit.camp bot **v{current_version}** with a cashout limit of ${cashout_limit}, {"without" if disableAutoBet else "with"} autobet and {"with" if shouldCollectRain else "without"} rain collection")
 except FileNotFoundError:
     print("users.json not found, please create a config file")
     input("Press enter to exit")
