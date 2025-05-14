@@ -1,1 +1,2 @@
 python stp.py
+pause

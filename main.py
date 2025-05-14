@@ -193,20 +193,20 @@ with SB(uc=True, headless=True) as sb:
                                 if gather_message == success_message:
                                     print("Successfully joined rain!")
                                     send_discord_message(f"**[{selected_account}]** successfully joined the rain!")
-                                sb.driver.save_screenshot("afterRainJoin.png")
+                                sb.driver.save_screenshot("afterRainJoin.png", folder="./errors")
                         except Exception as e:
                             if "RAIN JOINED" == sb.get_text("#app > div.v-application--wrap > nav > div.v-navigation-drawer__content > div > div.chat-footer.flex-shrink-0 > div.px-4.chat-rain-outer.mb-2 > div > div.v-card__text.px-3.py-3 > button.text-caption.join-btn.font-weight-bold.v-btn.v-btn--has-bg.theme--dark.v-size--default > span > span", timeout=2).strip():
                                 print("Successfully joined rain!")
                                 send_discord_message(f"**[{selected_account}]** successfully joined the rain!")
                             else:
                                 print(f"Failed to join rain: {e}")
-                                sb.driver.save_screenshot("rainError.png")
+                                sb.driver.save_screenshot("rainError.png", folder="./errors")
                                 sb.sleep(2)
                                 sb.driver.uc_open_with_reconnect(sb.get_current_url(), 10 + random.uniform(0, 2))
                                 checkForRain()
         except Exception as e:
             print(f"Failed to join rain: {e}")
-            sb.driver.save_screenshot("rainError.png")
+            sb.driver.save_screenshot("rainError.png", folder="./errors")
             sb.sleep(2)
 
     def getMoney():
@@ -225,7 +225,7 @@ with SB(uc=True, headless=True) as sb:
 
             return floatmoney
         except Exception as e:
-            sb.driver.save_screenshot(f"getMoneyError.png")
+            sb.driver.save_screenshot(f"getMoneyError.png", folder="./errors")
             isLoggedIn = not sb.driver.is_element_present("#app > div.v-application--wrap > header > div > button")
             if isLoggedIn:
                 alert(f"**[{selected_account}]** Failed to log user in, maybe a new token is needed?")
@@ -300,7 +300,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(5 + random.uniform(0, 7))
 
         except Exception as e:
-            sb.driver.save_screenshot(f"error2.png")
+            sb.driver.save_screenshot(f"error2.png", folder="./errors")
             print(f"Failed to find or click the button, reloading page... : {e}")
             sb.driver.uc_open_with_reconnect(url, 16 + random.uniform(0, 1))
             sb.sleep(20)
@@ -358,7 +358,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(5 + random.uniform(0, 7))
 
         except Exception as e:
-            sb.driver.save_screenshot(f"error1.png")
+            sb.driver.save_screenshot(f"error1.png", folder="./errors")
             print(f"Failed to find or click the button: {e}")
             sb.driver.uc_open_with_reconnect(url, 16 + random.uniform(0, 1))
             sb.sleep(20)
@@ -429,7 +429,7 @@ with SB(uc=True, headless=True) as sb:
                 else:
                     last_spin_result = "#app > div.v-application--wrap > main > div > div > div.container.game-container > div > div:nth-child(2) > div > div.bet-interface-blocks.mb-3 > div.round-history.ml-3 > div > svg:nth-child(3)"
                     wheel_result = sb.driver.execute_script("return [...document.querySelector(arguments[0]).classList].find((i) => i.includes('field-icon-')).split('-')[2]", last_spin_result)
-                    print(f"NOOO! Wheel landed on {wheel_result}, not {bet_name}, you lost ${money_before}. The most money you've had today is ${most_money}")
+                    print(f"NOOO! Wheel landed on {wheel_result}, not {bet_name}, you lost ${money_before}. The most money you've had after {total_claimed_faucets} claims is ${most_money}")
 
             place_money()
             # Navigate back to the main page
@@ -442,7 +442,7 @@ with SB(uc=True, headless=True) as sb:
 
         except Exception as e:
             print(f"Failed to bet on wheel: {e}")
-            sb.driver.save_screenshot("betOnWheelError.png")
+            sb.driver.save_screenshot("betOnWheelError.png", folder="./errors")
             sb.sleep(2)
             sb.driver.uc_open_with_reconnect(url, 20 + random.uniform(0, 2))
             sb.sleep(10 + random.uniform(0, 1.5))
@@ -473,7 +473,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(sleeptime)
         except Exception as e:
             print(f"ATTENTION! AN UNKNOWN ERROR OCCURED, a screenshot has been saved, error: {e}")
-            sb.driver.save_screenshot("UNKNOWNERROR.png")
+            sb.driver.save_screenshot("UNKNOWNERROR.png", folder="./errors")
             sb.sleep(2 + random.uniform(0, 5))
             sb.driver.uc_open_with_reconnect(url, 20 + random.uniform(0, 2))
             sb.sleep(10 + random.uniform(0, 1.5))

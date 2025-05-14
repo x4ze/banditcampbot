@@ -6,8 +6,10 @@ Follow the steps below to get started.
 
 ## Prerequisites
 
-- python3
-- google chrome
+#### The following have to be installed before running setup.bat
+
+- `python3`
+- `Google Chrome`
 
 ---
 
@@ -53,6 +55,11 @@ You can add **multiple users**, just separate them with a in the list comma.
   }
 ]
 ```
+
+### Additional arguments include:
+
+- `collect_rain` — whether bot should automatically join rain **[true/false]**
+- `autobet` — whether bot should automatically bet all your money until cashout limit has been reached **[true/false]**
 
 🔒 `Important`: Keep this file private. Anyone with access to the tokens can use your bandit.camp accounts.
 

@@ -22,7 +22,9 @@ def restart_script():
     print("🔁 Restarting setup to complete installation...")
     python_exe = sys.executable
     script_path = os.path.abspath(__file__)
-    os.execv(python_exe, [python_exe, script_path, RESTART_FLAG])
+    print(script_path)
+    subprocess.run([python_exe, script_path, RESTART_FLAG], check=True)
+    sys.exit()  # Exit the current process so it doesn't keep running
 
 # ---------- Step 2: Create Desktop Shortcut ----------
 def create_shortcut():
@@ -38,10 +40,9 @@ def create_shortcut():
     target = r"C:\Windows\System32\cmd.exe"
     arguments = f'/c python "{main_py}"'
 
-    # Optional icon - update this path if you have an icon file
-    icon_path = os.path.join(script_dir, "icon.ico")  # Optional
+    icon_path = os.path.join(script_dir, "icon.ico")
     if not os.path.exists(icon_path):
-        icon_path = None  # Fallback to default
+        icon_path = None
 
     shell = Dispatch('WScript.Shell')
     shortcut = shell.CreateShortCut(shortcut_path)
@@ -62,7 +63,9 @@ def create_users_json():
     {
         "name": "your_name",
         "token": "your_jwt_token",
-        "cashout_limit": 3
+        "cashout_limit": 3,
+        "collect_rain": false,
+        "autobet": true
     }
 ]""")
         print("Created 'users.json' file.")
