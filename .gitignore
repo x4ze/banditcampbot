@@ -1,5 +1,6 @@
 users.json
 downloaded_files
+errors/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
