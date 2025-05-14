@@ -6,22 +6,8 @@ import json
 import requests
 import os
 import sys
+import win32api
 
-try:
-    with open("version.txt", "r") as f:
-        current_version = f.read().strip()
-except FileNotFoundError:
-    print("version.txt not found")
-    input("Press enter to exit")
-    print("Closing...")
-    exit(0)
-    
-cashout_limit = 3 # Minimum scrap for the program to stop betting and cash out
-most_money = 0 # The most money the bot has ever had
-total_claimed_faucets = 0 # The total amount of claimed faucets
-last_rain_check = time.time()
-
-WEBHOOK_URL = "https://discord.com/api/webhooks/1350121755905359983/NcTo1lOPZ7jQDrSl3xVXuUfT9UThxsu9etrO6N0XK6LdNEqdHkVxuvvcJ2ui7kZZkM4k"
 
 def send_discord_message(message):
     data = {
@@ -31,6 +17,36 @@ def send_discord_message(message):
         "Content-Type": "application/json"
     }
     requests.post(WEBHOOK_URL, json=data, headers=headers)
+
+def on_exit():
+    send_discord_message(f"**[{selected_account}]** closed the bot, it had ${most_money} at most after {total_claimed_faucets} faucet claims")
+    
+
+#add listeners for window close
+win32api.SetConsoleCtrlHandler(lambda sig: on_exit() or True, True)
+def exit_program():
+    on_exit()
+    input("Press enter to exit")
+    print("Closing...")
+    exit(0)
+
+
+try:
+    with open("version.txt", "r") as f:
+        current_version = f.read().strip()
+except FileNotFoundError:
+    print("version.txt not found")
+    exit_program()
+    
+    
+    
+cashout_limit = 3 # Minimum scrap for the program to stop betting and cash out
+most_money = 0 # The most money the bot has ever had
+total_claimed_faucets = 0 # The total amount of claimed faucets
+last_rain_check = time.time()
+
+WEBHOOK_URL = "https://discord.com/api/webhooks/1350121755905359983/NcTo1lOPZ7jQDrSl3xVXuUfT9UThxsu9etrO6N0XK6LdNEqdHkVxuvvcJ2ui7kZZkM4k"
+
 
 
 def alert(message):
@@ -49,6 +65,7 @@ def check_for_updates():
         REPO_URL = "https://raw.githubusercontent.com/x4ze/banditcampbot/main"
         VERSION_FILE = f"{REPO_URL}/version.txt"
         SCRIPT_FILE = f"{REPO_URL}/main.py"
+        SETUP_FILE = f"{REPO_URL}/stp.py"
         print(f"Current script version: {current_version}")
         latest_version = requests.get(VERSION_FILE).text.strip()
 
@@ -56,6 +73,8 @@ def check_for_updates():
             print(f"A newer version ({latest_version}) is available, downloading...")
             with open(__file__, "w", encoding="utf-8") as f:
                 f.write(requests.get(SCRIPT_FILE).text)
+            with open("stp.py", "w", encoding="utf-8") as f:
+                f.write(requests.get(SETUP_FILE).text)
             with open("version.txt", "w+") as f:
                 f.write(latest_version)
 
@@ -74,6 +93,12 @@ def check_for_updates():
 
 try:
     check_for_updates()
+
+    # Create error image folder:
+    error_folder_name = "error_images"
+    if not os.path.exists(error_folder_name):
+        os.makedirs(error_folder_name)
+        print(f"Folder '{error_folder_name}' created.")
 
     with open('users.json') as f:
         data = json.load(f)
@@ -109,9 +134,9 @@ try:
     send_discord_message(f"**[{selected_account}]** starting bandit.camp bot **v{current_version}** with a cashout limit of ${cashout_limit}, {"without" if disableAutoBet else "with"} autobet and {"with" if shouldCollectRain else "without"} rain collection")
 except FileNotFoundError:
     print("users.json not found, please create a config file")
-    input("Press enter to exit")
-    print("Closing...")
-    exit(0)
+    exit_program()
+    
+    
 
 
 
@@ -120,17 +145,13 @@ print("Starting...")
 with SB(uc=True, headless=True) as sb:
 
     sb.driver.set_window_size(1920, 1080)
-
+    
     # URL to open
     url = "https://bandit.camp"
     sb.driver.uc_open_with_reconnect(url, 20 + random.uniform(0, 2))
 
     print("Sleeping for 15 seconds...")
     sb.sleep(15 + random.uniform(0, 1.5))
-
-
-
-
     
     # Set JWT cookie
     jwt_cookie = {
@@ -193,20 +214,20 @@ with SB(uc=True, headless=True) as sb:
                                 if gather_message == success_message:
                                     print("Successfully joined rain!")
                                     send_discord_message(f"**[{selected_account}]** successfully joined the rain!")
-                                sb.driver.save_screenshot("afterRainJoin.png")
+                                sb.driver.save_screenshot(f"{error_folder_name}\\afterRainJoin.png")
                         except Exception as e:
                             if "RAIN JOINED" == sb.get_text("#app > div.v-application--wrap > nav > div.v-navigation-drawer__content > div > div.chat-footer.flex-shrink-0 > div.px-4.chat-rain-outer.mb-2 > div > div.v-card__text.px-3.py-3 > button.text-caption.join-btn.font-weight-bold.v-btn.v-btn--has-bg.theme--dark.v-size--default > span > span", timeout=2).strip():
                                 print("Successfully joined rain!")
                                 send_discord_message(f"**[{selected_account}]** successfully joined the rain!")
                             else:
                                 print(f"Failed to join rain: {e}")
-                                sb.driver.save_screenshot("rainError.png")
+                                sb.driver.save_screenshot(f"{error_folder_name}\\rainError.png")
                                 sb.sleep(2)
                                 sb.driver.uc_open_with_reconnect(sb.get_current_url(), 10 + random.uniform(0, 2))
                                 checkForRain()
         except Exception as e:
             print(f"Failed to join rain: {e}")
-            sb.driver.save_screenshot("rainError.png")
+            sb.driver.save_screenshot(f"{error_folder_name}\\rainError.png")
             sb.sleep(2)
 
     def getMoney():
@@ -219,13 +240,10 @@ with SB(uc=True, headless=True) as sb:
             if floatmoney >= cashout_limit and not disableAutoBet:
                 print(f"MADE ${floatmoney}, exiting")
                 alert(f"**[{selected_account}]** The program has gathered **${floatmoney}** after collecting faucet {total_claimed_faucets} times and is stopping! @here")
-                input("Press enter to exit")
-                print("Closing...")
-                exit(0)
-
+                exit_program()
             return floatmoney
         except Exception as e:
-            sb.driver.save_screenshot(f"getMoneyError.png")
+            sb.driver.save_screenshot(f"{error_folder_name}\\getMoneyError.png")
             isLoggedIn = not sb.driver.is_element_present("#app > div.v-application--wrap > header > div > button")
             if isLoggedIn:
                 alert(f"**[{selected_account}]** Failed to log user in, maybe a new token is needed?")
@@ -233,10 +251,7 @@ with SB(uc=True, headless=True) as sb:
             else:
                 print(f"Failed to get money, likely bandit.camp timeout, wait a few hours {e}")
                 alert(f"**[{selected_account}]** Failed while checking money, likely bandit.camp timeout, wait a few hours")
-            input("Press enter to exit")
-            print("Closing...")
-            exit(0)
-    
+            exit_program()
     def collectMoney():
         global total_claimed_faucets
         try:
@@ -271,15 +286,11 @@ with SB(uc=True, headless=True) as sb:
             if gather_message == 'You have hit the maximum claimable faucet amount for today.':
                 alert(f"**[{selected_account}]** Maximum claimable faucet amount for today reached, bot had ${most_money} at most after {total_claimed_faucets} faucet claims")
                 print("Exiting, reached max claimable amount")
-                input("Press enter to exit")
-                print("Closing...")
-                exit(0)
+                exit_program() 
             elif gather_message == 'Your network is rate limited. Disable your VPN or try again later.':
                 alert(f"**[{selected_account}]** Network is rate limited, bot had ${most_money} at most after {total_claimed_faucets} faucet claims, stopping program...")
                 print("Exiting, network is rate limited")
-                input("Press enter to exit")
-                print("Closing...")
-                exit(0)
+                exit_program()   
             elif gather_message == 'Please try again in a few seconds.':
                 print("Sleeping and trying again shortly...")
                 overlay = "#app > div.v-overlay.v-overlay--active.theme--dark > div.v-overlay__scrim"
@@ -300,7 +311,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(5 + random.uniform(0, 7))
 
         except Exception as e:
-            sb.driver.save_screenshot(f"error2.png")
+            sb.driver.save_screenshot(f"{error_folder_name}\\FaucetCollectionError.png")
             print(f"Failed to find or click the button, reloading page... : {e}")
             sb.driver.uc_open_with_reconnect(url, 16 + random.uniform(0, 1))
             sb.sleep(20)
@@ -358,7 +369,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(5 + random.uniform(0, 7))
 
         except Exception as e:
-            sb.driver.save_screenshot(f"error1.png")
+            sb.driver.save_screenshot(f"{error_folder_name}\\DailyCaseError.png")
             print(f"Failed to find or click the button: {e}")
             sb.driver.uc_open_with_reconnect(url, 16 + random.uniform(0, 1))
             sb.sleep(20)
@@ -442,7 +453,7 @@ with SB(uc=True, headless=True) as sb:
 
         except Exception as e:
             print(f"Failed to bet on wheel: {e}")
-            sb.driver.save_screenshot("betOnWheelError.png")
+            sb.driver.save_screenshot(f"{error_folder_name}\\betOnWheelError.png")
             sb.sleep(2)
             sb.driver.uc_open_with_reconnect(url, 20 + random.uniform(0, 2))
             sb.sleep(10 + random.uniform(0, 1.5))
@@ -473,7 +484,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(sleeptime)
         except Exception as e:
             print(f"ATTENTION! AN UNKNOWN ERROR OCCURED, a screenshot has been saved, error: {e}")
-            sb.driver.save_screenshot("UNKNOWNERROR.png")
+            sb.driver.save_screenshot(f"{error_folder_name}\\UNKNOWNERROR.png")
             sb.sleep(2 + random.uniform(0, 5))
             sb.driver.uc_open_with_reconnect(url, 20 + random.uniform(0, 2))
             sb.sleep(10 + random.uniform(0, 1.5))
