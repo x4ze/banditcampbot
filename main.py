@@ -193,20 +193,20 @@ with SB(uc=True, headless=True) as sb:
                                 if gather_message == success_message:
                                     print("Successfully joined rain!")
                                     send_discord_message(f"**[{selected_account}]** successfully joined the rain!")
-                                sb.driver.save_screenshot("afterRainJoin.png", folder="./errors")
+                                sb.driver.save_screenshot("afterRainJoin.png")
                         except Exception as e:
                             if "RAIN JOINED" == sb.get_text("#app > div.v-application--wrap > nav > div.v-navigation-drawer__content > div > div.chat-footer.flex-shrink-0 > div.px-4.chat-rain-outer.mb-2 > div > div.v-card__text.px-3.py-3 > button.text-caption.join-btn.font-weight-bold.v-btn.v-btn--has-bg.theme--dark.v-size--default > span > span", timeout=2).strip():
                                 print("Successfully joined rain!")
                                 send_discord_message(f"**[{selected_account}]** successfully joined the rain!")
                             else:
                                 print(f"Failed to join rain: {e}")
-                                sb.driver.save_screenshot("rainError.png", folder="./errors")
+                                sb.driver.save_screenshot("rainError.png")
                                 sb.sleep(2)
                                 sb.driver.uc_open_with_reconnect(sb.get_current_url(), 10 + random.uniform(0, 2))
                                 checkForRain()
         except Exception as e:
             print(f"Failed to join rain: {e}")
-            sb.driver.save_screenshot("rainError.png", folder="./errors")
+            sb.driver.save_screenshot("rainError.png")
             sb.sleep(2)
 
     def getMoney():
@@ -225,7 +225,7 @@ with SB(uc=True, headless=True) as sb:
 
             return floatmoney
         except Exception as e:
-            sb.driver.save_screenshot(f"getMoneyError.png", folder="./errors")
+            sb.driver.save_screenshot(f"getMoneyError.png")
             isLoggedIn = not sb.driver.is_element_present("#app > div.v-application--wrap > header > div > button")
             if isLoggedIn:
                 alert(f"**[{selected_account}]** Failed to log user in, maybe a new token is needed?")
@@ -300,7 +300,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(5 + random.uniform(0, 7))
 
         except Exception as e:
-            sb.driver.save_screenshot(f"error2.png", folder="./errors")
+            sb.driver.save_screenshot(f"error2.png")
             print(f"Failed to find or click the button, reloading page... : {e}")
             sb.driver.uc_open_with_reconnect(url, 16 + random.uniform(0, 1))
             sb.sleep(20)
@@ -358,7 +358,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(5 + random.uniform(0, 7))
 
         except Exception as e:
-            sb.driver.save_screenshot(f"error1.png", folder="./errors")
+            sb.driver.save_screenshot(f"error1.png")
             print(f"Failed to find or click the button: {e}")
             sb.driver.uc_open_with_reconnect(url, 16 + random.uniform(0, 1))
             sb.sleep(20)
@@ -442,7 +442,7 @@ with SB(uc=True, headless=True) as sb:
 
         except Exception as e:
             print(f"Failed to bet on wheel: {e}")
-            sb.driver.save_screenshot("betOnWheelError.png", folder="./errors")
+            sb.driver.save_screenshot("betOnWheelError.png")
             sb.sleep(2)
             sb.driver.uc_open_with_reconnect(url, 20 + random.uniform(0, 2))
             sb.sleep(10 + random.uniform(0, 1.5))
@@ -473,7 +473,7 @@ with SB(uc=True, headless=True) as sb:
             sb.sleep(sleeptime)
         except Exception as e:
             print(f"ATTENTION! AN UNKNOWN ERROR OCCURED, a screenshot has been saved, error: {e}")
-            sb.driver.save_screenshot("UNKNOWNERROR.png", folder="./errors")
+            sb.driver.save_screenshot("UNKNOWNERROR.png")
             sb.sleep(2 + random.uniform(0, 5))
             sb.driver.uc_open_with_reconnect(url, 20 + random.uniform(0, 2))
             sb.sleep(10 + random.uniform(0, 1.5))
