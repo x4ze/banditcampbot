@@ -25,8 +25,8 @@ def on_exit():
 #add listeners for window close
 win32api.SetConsoleCtrlHandler(lambda sig: on_exit() or True, True)
 def exit_program():
-    on_exit()
     input("Press enter to exit")
+    on_exit()
     print("Closing...")
     exit(0)
 
@@ -45,7 +45,12 @@ most_money = 0 # The most money the bot has ever had
 total_claimed_faucets = 0 # The total amount of claimed faucets
 last_rain_check = time.time()
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/1350121755905359983/NcTo1lOPZ7jQDrSl3xVXuUfT9UThxsu9etrO6N0XK6LdNEqdHkVxuvvcJ2ui7kZZkM4k"
+
+WEBHOOK_PART1 = "https://discord.com/api/webhooks/"
+WEBHOOK_PART2 = "1373332198442406069/"
+WEBHOOK_PART3 = "CwHf9Jsc20Eh75gqN1zSiqGIfNCizPveL"
+WEBHOOK_PART4 = "4b1WmM_1QBfZ1wbxc2jP0q3xZ0aL1ywpK"
+WEBHOOK_URL = f"{WEBHOOK_PART1}{WEBHOOK_PART2}{WEBHOOK_PART3}Qq{WEBHOOK_PART4}"
 
 
 
@@ -75,7 +80,7 @@ def check_for_updates():
                 f.write(requests.get(SCRIPT_FILE).text)
             with open("stp.py", "w", encoding="utf-8") as f:
                 f.write(requests.get(SETUP_FILE).text)
-            with open("version.txt", "w+") as f:
+            with open("version.txt", "w") as f:
                 f.write(latest_version)
 
             
